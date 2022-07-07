@@ -16,28 +16,25 @@
         <h1>TODO LIST</h1>
     </header>
     <section>
-        <form>
-            <input type="text" class="bar">
-        </form>
+        <input type="text" class="bar">
         <div class="no-data">NO DATA FOUND</div>
         <div class="data-main">
-          
         </div>
     </section>
     <footer>
         <div class="footer-button">
             <button class="add-task focus"><i class="fa-solid fa-plus"></i></button>
-            <button class="search-task"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="search-task" title="Delete Icon"><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
         <div class="footer-menu">
             <select name="actions" id="action">
-                <option value="Action" disabled selected>Action</option>
-                <option value="Delete All Selected" >Delete All Selected</option>
-                <option value="Select All">Select All</option>
-                <option value="Unselect All">Unselect All</option>
+                <option value="Action" selected>Action</option>
+                <option value="Delete All Selected" class="deleteAll">Delete All Selected</option>
+                <option value="Select All" class="selectAll">Select All</option>
+                <option value="Unselect All" class="unselectAll">Unselect All</option>
             </select>
             <select name="Sort" id="sort">
-                <option value="Sort" disabled selected>Sort</option>
+                <option value="Sort-List" selected>Sort List</option>
                 <option value="A-Z">A-Z</option>
                 <option value="Z-A">Z-A</option>
                 <option value="Newest">Newest</option>
@@ -45,7 +42,7 @@
             </select>
         </div>
         <div class="footer-action">
-            <button class="all">All</button>
+            <button class="all focus">All</button>
             <button class="active">Active</button>
             <button class="complete">Completed</button>
         </div>

@@ -38,10 +38,10 @@ section {
     .bar,
     .data-line {
         width: 100%;
-        height: 32px;
+        height: 40px;
         border-radius: 5px;
-        padding: 8px;
-        font-size: 20px;
+        padding: 2px 12px;
+        font-size: 25px;
         border-color: rgb(163, 156, 156);
     }
 
@@ -65,15 +65,16 @@ section {
         .data {
             input[type=text] {
                 border: none;
-                font-size: 20px;
+                font-size: 25px;
             }
         }
 
         .data-button {
             button {
                 border: none;
-                font-size: 20px;
-                padding: 0 5px;
+                font-size: 25px;
+                padding: 0 10px;
+
             }
         }
     }
@@ -82,7 +83,33 @@ section {
         height: 0.1px;
         color: black;
         background-color: black;
+        margin-top: -10px;
+    }
+}
 
+.tooltip {
+    position: relative;
+    display: inline-block;
+
+    .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+
+        /* Position the tooltip */
+        position: absolute;
+        top: 25px;
+        left: -40px;
+        z-index: 1;
+    }
+
+    &:hover .tooltiptext {
+        visibility: visible;
+        cursor: pointer;
     }
 }
 
@@ -116,6 +143,7 @@ footer {
         #sort {
             font-size: 20px;
             padding: 0 3px;
+            margin: 0 10px;
 
             &:focus {
                 box-shadow: 0 0 10px var(--primary-color);
@@ -137,13 +165,7 @@ footer {
             outline-color: var(--primary-color);
             font-weight: bold;
             border-radius: 4px;
-
-            &:focus,
-            &:hover {
-                color: var(--primary-color);
-                background-color: white;
-                cursor: pointer;
-            }
+            margin: 0 2px;
         }
     }
 }
@@ -156,6 +178,7 @@ footer {
     body {
         margin: 2% 10%;
     }
+
     footer {
         display: flex;
         justify-content: center;
@@ -191,7 +214,7 @@ footer {
     }
 }
 
-@media only screen and (max-width: 883px) {
+@media only screen and (max-width: 1000px) {
     footer {
         display: flex;
         flex-wrap: wrap;
@@ -206,7 +229,8 @@ footer {
             display: flex;
             flex-wrap: wrap;
 
-            #action, #sort {
+            #action,
+            #sort {
                 width: 100%;
             }
         }

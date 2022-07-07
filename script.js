@@ -1,6 +1,6 @@
 'use strict';
 
-const dataList = [];
+let dataList = [];
 
 const mainBar = document.querySelector('.bar');
 const addButton = document.querySelector('.add-task');
@@ -17,7 +17,9 @@ const checked = document.querySelector('.check');
 const action = document.querySelector("#action");
 const Sort = document.querySelector('#sort');
 const bodyPart = document.querySelector('body');
-const span = document.querySelector('span');
+const deleteAll = document.querySelector('.deleteAll');
+const selectAll = document.querySelector('.selectAll');
+const unselectAll = document.querySelector('.unselectAll');
 
 
 if (dataList.length === 0) {
@@ -27,21 +29,26 @@ dataMainContainer.innerHTML = '';
 
 const displayData = function (dataa, sort = false, value = 'Oldest') {
     dataMainContainer.innerHTML = '';
+    let d = sort ? dataa.slice().sort(function (a, b) {
+        if (a.data < b.data) {
+            return -1;
+        }
+        if (a.data > a.data) {
+            return 1;
+        }
+        return 0;
+    }).sort((a, b) => a.data.length - b.data.length) : dataa;
 
-
-    const data = dataa.map(d => d.data);
-
-    const d = sort ? data.slice().sort() : data;
-
-    d.forEach((mov, i) => {
+    d.forEach(function (mov, i) {
+        let ch = mov.check == true ? 'checked' : 'a';
         const text = `<div class="data-line">
       <div class="data">
-              <input type="checkbox" name="chek" value="${mov}" class="check" id="check-${i}" onchange=checkID(${i})> 
-              <span><input type="text" id="${i}" class='textadd' value=${mov} disabled></span>
+              <input type="checkbox" name="chek" value="${mov.data}" class="check" id="check-${mov.id}" onchange=checkID(${mov.id}) ${ch}> 
+              <input type="text" id="${mov.id}" class='textadd' value=${mov.data} disabled>
       </div>
       <div class="data-button">
-          <button class="edit edit-close" onclick=editID(${i})><i class="fa-solid fa-pen-to-square"></i></button>
-          <button class="delete" onclick=deleteID(${i})><i class="fa-solid fa-delete-left"></i></button>
+          <button class="edit edit-close tooltip" onclick=editID(${mov.id})><i class="fa-solid fa-pen-to-square"></i><span class="tooltiptext">Edit Icon</span></button>
+          <button class="delete tooltip" onclick=deleteID(${i})><i class="fa-solid fa-delete-left"></i><span class="tooltiptext">Delete Icon</span></button>
       </div>
   </div>
   <hr style="margin: 15px 0;">`;
@@ -61,35 +68,36 @@ const displayData = function (dataa, sort = false, value = 'Oldest') {
 };
 
 function deleteID(id) {
-    dataList.splice(id, 1);
-    displayData(dataList);
-    console.log(dataList);
-    if (dataList.length == 0) {
-        noData.style.opacity = 100;
+    if (confirm("Are you sure for deleting this task ?") == true) {
+        dataList.splice(id, 1);
+        displayData(dataList);
+        console.log(dataList);
+        if (dataList.length == 0) {
+            noData.style.opacity = 100;
+        }
+    }
+    else {
+        alert("Your task is not delete :)");
     }
 };
 
 
 function editID(id) {
     const Data = dataList.findIndex(data => data.id === id);
-    console.log(Data);
     let editInput = document.getElementById(id);
     editInput.removeAttribute('disabled');
-    console.log(editInput);
     editInput.focus();
 
     editInput.classList.add('edit-active');
-    console.log(editInput.classList.contains('edit-active'));
 
-    document.addEventListener('keypress', function(e) {
-        if(e.key==='Enter' && editInput.classList.contains('edit-active'))
-        {
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter' && editInput.classList.contains('edit-active')) {
             e.preventDefault();
             let d = editInput.value;
             dataList[Data].data = d;
             console.log(dataList);
             editInput.classList.remove('edit-active');
-            editInput.setAttribute('disabled','');
+            editInput.setAttribute('disabled', '');
         }
     })
 }
@@ -97,7 +105,7 @@ function editID(id) {
 const add = (data) => {
     if (data !== '') {
         noData.style.opacity = 0;
-        dataList.push({ id: dataList.length, data: data, check: false });
+        dataList.push({ id: Date.now(), data: data, check: false });
         console.log(dataList);
         displayData(dataList);
         mainBar.value = '';
@@ -126,6 +134,7 @@ const search = (data) => {
     else {
         noData.style.opacity = 0;
     }
+    mainBar.value = '';
 
     if (!searchButton.classList.contains('focus')) searchButton.classList.add('focus');
     if (addButton.classList.contains('focus')) addButton.classList.remove('focus');
@@ -140,16 +149,20 @@ mainBar.addEventListener('keypress', function (e) {
     }
     else if (e.key == 'Enter' && searchButton.classList.contains('focus')) {
         e.preventDefault();
+
+        dataMainContainer.innerHTML = '';
         const data = mainBar.value;
         search(data);
-
-        const filterdData = dataList.filter(mov => mov.data.toLowerCase().includes(data.toLowerCase()));
     }
 });
 
 
 addButton.addEventListener('click', function (e) {
     e.preventDefault();
+
+    if (dataList.length !== 0) {
+        displayData(dataList);
+    }
     const data = mainBar.value;
     add(data);
 });
@@ -163,98 +176,162 @@ searchButton.addEventListener('click', function (e) {
     search(data);
 });
 
+mainBar.addEventListener('change', function (e) {
+    console.log('mainbar value changed');
+});
+
 allData.addEventListener('click', function (e) {
     e.preventDefault();
     displayData(dataList);
 });
 
-// checked.addEventListener('change',function(e){
-//     e.preventDefault();
-//     console.log('checked');
-// });
-
 activeData.addEventListener('click', function (e) {
     e.preventDefault();
-    const active = dataList.filter(d => d.check == true);
-    console.log(active);
-});
-
-action.addEventListener('change', function () {
-    if (action.value == "Delete All Selected") {
-        addActivityItem();
-    }
-    else if (action.value == "Select All") {
-        addActivityItem();
+    const active = dataList.filter(d => d.check == false);
+    if (active.length === 0) {
+        noData.style.opacity = 100;
+        dataMainContainer.innerHTML = '';
     }
     else {
-        addActivityItem();
+        noData.style.opacity = 0;
+        displayData(active);
+    }
+});
+
+completeData.addEventListener('click', function (e) {
+    e.preventDefault();
+    const complete = dataList.filter(d => d.check == true);
+    if (complete.length === 0) {
+        noData.style.opacity = 100;
+        dataMainContainer.innerHTML = '';
+    }
+    else {
+        noData.style.opacity = 0;
+        displayData(complete);
     }
 });
 
 let sort = false;
 
-const Sorted = () => {
+Sort.addEventListener('change', function () {
     if (Sort.value == 'A-Z') {
         displayData(dataList, !sort, Sort.value);
+        Sort.value = 'Sort-List';
     }
     else if (Sort.value == 'Z-A') {
         displayData(dataList, !sort, Sort.value);
+        Sort.value = 'Sort-List';
     }
     else if (Sort.value == 'Newest') {
         displayData(dataList, sort, Sort.value);
+        Sort.value = 'Sort-List';
+    }
+    else if (Sort.value == 'Oldest') {
+        displayData(dataList, sort, Sort.value);
+        Sort.value = 'Sort-List';
+    }
+});
+
+const deleteallSelected = () => {
+    if (dataList.filter(d => d.check == true).length != 0) {
+        if (confirm("Are you sure for deleting this task ?") == true) {
+            dataMainContainer.innerHTML = '';
+            const x = dataList.filter(d => d.check == false);
+            console.log('x', x);
+            dataList.splice(0);
+            console.log(dataList);
+            dataList = [].concat(x);
+            if (dataList.length === 0) {
+                noData.style.opacity = 100;
+            }
+            else {
+                displayData(dataList);
+            }
+        }
+        else {
+            alert("Your task is not delete :)");
+        }
+    }
+    else{
+        alert('First select the task ;)');
+    }
+}
+
+const selectAllF = () => {
+    dataList.forEach(d => d.check = true);
+    if (dataList.length !== 0) {
+        displayData(dataList);
     }
     else {
-        displayData(dataList, sort, Sort.value);
+        dataMainContainer.innerHTML = '';
     }
 }
 
-Sort.addEventListener('change', function () {
-    Sorted();
-});
-
-Sort.addEventListener('click', function () {
-    Sorted();
-});
-
-
-function addActivityItem() {
-    // ... Code to add item here
-    console.log(action.value);
+const unselectAllF = () => {
+    dataList.forEach((mov) => mov.check = false);
+    if (dataList.length !== 0) {
+        displayData(dataList);
+    }
+    else {
+        dataMainContainer.innerHTML = '';
+    }
 }
+
+action.addEventListener('change', function () {
+    if (action.value == "Delete All Selected") {
+        deleteallSelected();
+        action.value = "Action";
+    }
+    else if (action.value == "Select All") {
+        selectAllF();
+        action.value = "Action";
+    }
+    else if (action.value == "Unselect All") {
+        unselectAllF();
+        action.value = "Action";
+    }
+});
+
+
+
+
 
 function checkID(index) {
     const dataCheck = dataList.findIndex(d => d.id === index);
-    dataList[dataCheck].check=true;
-    // document.getElementById(`check-${index}`).checked = "checked";
+    dataList[dataCheck].check = !dataList[dataCheck].check;
+    const checkInput = document.getElementById(`check-${index}`);
+    //checkInput.checked = true;
+    if (checkInput.checked)
+        checkInput.setAttribute('checked', '');
+    else
+        checkInput.removeAttribute('checked');
 
+    displayData(dataList);
 }
 
 
 
 /*
-
-function editItem(event) {
-    // console.log(Data);
-    let item = event.target.innerHTML;
-    let itemInput = document.createElement('input');
-    itemInput.type='text';
-    itemInput.value=item;
-    itemInput.addEventListener('keypress',saveItem);
-    itemInput.addEventListener('click',saveItem);
-    event.target.parentNode.prepend(itemInput);
-    event.target.remove();
-    itemInput.select();
-}
-
-function saveItem(event) {
-    let inputValue = event.target.value;
-    if(event.target.value.length > 0 && (event.keyCode === 13 || event.type === 'click')) {
-        let span = document.createElement('span');
-        span.addEventListener('dblclick', editItem);
-        span.textContent = event.target.value;
-        event.target.parentNode.prepend(span);
-        event.target.remove();
+function validateInterest(evt)
+{
+    evt.preventDefault();
+    var mininterest = document.querySelectorAll("[name=mininterest]");
+    var count = 0,
+    interests = [];
+    for (var i = 0; i < mininterest.length; i++)
+    {
+        if (mininterest[i].checked) {
+            count++;
+            interests.push(mininterest[i].value);
+        }
+    } //This is meant to mimic where you would make a fetch POST call
+    if (count > 1) {
+        addToLog("enough interests selected: " + interests);
     }
+    else {
+        addToLog("**NOT ENOUGH** interests selected: " + interests);
+    }
+    return false;
 }
 
 action.addEventListener("click", function() {
