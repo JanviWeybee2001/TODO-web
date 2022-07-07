@@ -22,6 +22,7 @@ const selectAll = document.querySelector('.selectAll');
 const unselectAll = document.querySelector('.unselectAll');
 
 
+
 if (dataList.length === 0) {
     noData.style.opacity = 100;
 }
@@ -47,8 +48,8 @@ const displayData = function (dataa, sort = false, value = 'Oldest') {
               <input type="text" id="${mov.id}" class='textadd' value=${mov.data} disabled>
       </div>
       <div class="data-button">
-          <button class="edit edit-close tooltip" onclick=editID(${mov.id})><i class="fa-solid fa-pen-to-square"></i><span class="tooltiptext">Edit Icon</span></button>
-          <button class="delete tooltip" onclick=deleteID(${i})><i class="fa-solid fa-delete-left"></i><span class="tooltiptext">Delete Icon</span></button>
+          <button class="edit edit-close" onclick=editID(${mov.id})><i class="fa-solid fa-pen-to-square" title="Edit button"></i></button>
+          <button class="delete" onclick=deleteID(${i})><i class="fa-solid fa-delete-left"title="Delete button"></i></button>
       </div>
   </div>
   <hr style="margin: 15px 0;">`;
@@ -75,9 +76,7 @@ function deleteID(id) {
         if (dataList.length == 0) {
             noData.style.opacity = 100;
         }
-    }
-    else {
-        alert("Your task is not delete :)");
+        setTimeout(alert("Your task is deleted :)"),1000);
     }
 };
 
@@ -128,6 +127,7 @@ const search = (data) => {
         mainBar.value = '';
     }
     else if (filterdData.length == 0) {
+        noData.innerHTML = 'NO DATA FOUND';
         noData.style.opacity = 100;
         displayData(filterdData);
     }
@@ -188,7 +188,8 @@ allData.addEventListener('click', function (e) {
 activeData.addEventListener('click', function (e) {
     e.preventDefault();
     const active = dataList.filter(d => d.check == false);
-    if (active.length === 0) {
+    if (active.length === 0) { 
+        noData.innerHTML = 'NO DATA FOUND';
         noData.style.opacity = 100;
         dataMainContainer.innerHTML = '';
     }
@@ -202,6 +203,7 @@ completeData.addEventListener('click', function (e) {
     e.preventDefault();
     const complete = dataList.filter(d => d.check == true);
     if (complete.length === 0) {
+        noData.innerHTML = 'NO DATA FOUND';
         noData.style.opacity = 100;
         dataMainContainer.innerHTML = '';
     }
@@ -242,14 +244,12 @@ const deleteallSelected = () => {
             console.log(dataList);
             dataList = [].concat(x);
             if (dataList.length === 0) {
+                noData.innerHTML = 'ADD NEW TASK ITEM';
                 noData.style.opacity = 100;
             }
             else {
                 displayData(dataList);
             }
-        }
-        else {
-            alert("Your task is not delete :)");
         }
     }
     else{
@@ -308,9 +308,6 @@ function checkID(index) {
 
     displayData(dataList);
 }
-
-
-
 /*
 function validateInterest(evt)
 {
