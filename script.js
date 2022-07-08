@@ -2,86 +2,86 @@
 
 let dataList = [];
 
-const mainBar = document.querySelector('.bar');
-const addButton = document.querySelector('.add-task');
-const searchButton = document.querySelector('.search-task');
-const dataMainContainer = document.querySelector('.data-main');
-const noData = document.querySelector('.no-data');
-const editButton = document.querySelector('.edit');
-const deleteButton = document.querySelector('.delete');
-const value = document.querySelector('span');
-const allData = document.querySelector('.all');
-const activeData = document.querySelector('.active');
-const completeData = document.querySelector('.complete');
-const checked = document.querySelector('.check');
-const action = document.querySelector("#action");
-const Sort = document.querySelector('#sort');
-const bodyPart = document.querySelector('body');
-const deleteAll = document.querySelector('.deleteAll');
-const selectAll = document.querySelector('.selectAll');
-const unselectAll = document.querySelector('.unselectAll');
+const MAIN_BAR = document.querySelector('.bar');
+const ADD_BUTTON = document.querySelector('.add-task');
+const SEARCH_BUTTON = document.querySelector('.search-task');
+const DATA_MAIN_CONTAINER = document.querySelector('.data-main');
+const NO_DATA = document.querySelector('.no-data');
+const ALL_DATA = document.querySelector('#all');
+const ACTIVE_DATA = document.querySelector('#active');
+const COMPLETE_DATA = document.querySelector('#complete');
+const ACTION = document.querySelector("#action");
+const SORT = document.querySelector('#sort');
 
 
 
 if (dataList.length === 0) {
-    noData.style.opacity = 100;
+    NO_DATA.style.opacity = 100;
 }
-dataMainContainer.innerHTML = '';
 
-const displayData = function (dataa, sort = false, value = 'Oldest') {
-    dataMainContainer.innerHTML = '';
-    let d = sort ? dataa.slice().sort(function (a, b) {
-        if (a.data < b.data) {
-            return -1;
-        }
-        if (a.data > a.data) {
-            return 1;
-        }
-        return 0;
-    }).sort((a, b) => a.data.length - b.data.length) : dataa;
+DATA_MAIN_CONTAINER.innerHTML = '';
 
-    d.forEach(function (mov, i) {
-        let ch = mov.check == true ? 'checked' : 'a';
+// View todo list
+const viewTODO = function (dataArray, sort = false, value = 'Oldest') {
+    DATA_MAIN_CONTAINER.innerHTML = '';
+    var reA = /[^a-zA-Z]/g;
+    var reN = /[^0-9]/g;
+
+    function sortAlphaNum(a, b) {
+        var aA = a.data.replace(reA, "");
+        var bA = b.data.replace(reA, "");
+        if (aA === bA) {
+            var aN = parseInt(a.data.replace(reN, ""), 10);
+            var bN = parseInt(b.data.replace(reN, ""), 10);
+            return aN === bN ? 0 : aN > bN ? 1 : -1;
+        } else {
+            return aA > bA ? 1 : -1;
+        }
+    }
+    let data = sort ? dataArray.slice().sort(sortAlphaNum) : dataArray;
+
+    data.forEach(function (dataItem, i) {
+        let ch = dataItem.check == true ? 'checked' : null;
         const text = `<div class="data-line">
       <div class="data">
-              <input type="checkbox" name="chek" value="${mov.data}" class="check" id="check-${mov.id}" onchange=checkID(${mov.id}) ${ch}> 
-              <input type="text" id="${mov.id}" class='textadd' value=${mov.data} disabled>
+              <input type="checkbox" name="chek" value="${dataItem.data}" class="check" id="check-${dataItem.id}" onchange="checkItem(${dataItem.id})" ${ch} >
+              <input type="text" id="${dataItem.id}" class='textadd' value="${dataItem.data}" disabled ${Boolean(ch) ? 'style="text-decoration:line-through"' : 'style="text-decoration:none"'}>
       </div>
       <div class="data-button">
-          <button class="edit edit-close" onclick=editID(${mov.id})><i class="fa-solid fa-pen-to-square" title="Edit button"></i></button>
-          <button class="delete" onclick=deleteID(${i})><i class="fa-solid fa-delete-left"title="Delete button"></i></button>
+          <button class="edit edit-close" onclick=editItem(${dataItem.id})><i class="fa-solid fa-pen-to-square" title="Edit button"></i></button>
+          <button class="delete" onclick=deleteItem(${i})><i class="fa-solid fa-delete-left"title="Delete button"></i></button>
       </div>
   </div>
   <hr style="margin: 15px 0;">`;
         if (sort) {
             if (value == 'A-Z')
-                dataMainContainer.insertAdjacentHTML('beforeend', text);
+                DATA_MAIN_CONTAINER.insertAdjacentHTML('beforeend', text);
             else
-                dataMainContainer.insertAdjacentHTML('afterbegin', text);
+                DATA_MAIN_CONTAINER.insertAdjacentHTML('afterbegin', text);
         }
         else {
             if (value == 'Newest')
-                dataMainContainer.insertAdjacentHTML('afterbegin', text);
+                DATA_MAIN_CONTAINER.insertAdjacentHTML('afterbegin', text);
             else
-                dataMainContainer.insertAdjacentHTML('beforeend', text);
+                DATA_MAIN_CONTAINER.insertAdjacentHTML('beforeend', text);
         }
     });
 };
 
-function deleteID(id) {
+// Delete Item of TODO
+function deleteItem(id) {
     if (confirm("Are you sure for deleting this task ?") == true) {
         dataList.splice(id, 1);
-        displayData(dataList);
+        viewTODO(dataList);
         console.log(dataList);
         if (dataList.length == 0) {
-            noData.style.opacity = 100;
+            NO_DATA.style.opacity = 100;
         }
-        setTimeout(alert("Your task is deleted :)"),1000);
     }
 };
 
-
-function editID(id) {
+// Edit Item of TODO
+function editItem(id) {
     const Data = dataList.findIndex(data => data.id === id);
     let editInput = document.getElementById(id);
     editInput.removeAttribute('disabled');
@@ -101,261 +101,258 @@ function editID(id) {
     })
 }
 
-const add = (data) => {
+// Add item Function
+const addItem = (data) => {
     if (data !== '') {
-        noData.style.opacity = 0;
+        NO_DATA.style.opacity = 0;
         dataList.push({ id: Date.now(), data: data, check: false });
         console.log(dataList);
-        displayData(dataList);
-        mainBar.value = '';
+        viewTODO(dataList);
+        MAIN_BAR.value = '';
     }
     else if (dataList.length == 0) {
-        noData.style.opacity = 100;
+        NO_DATA.style.opacity = 100;
     }
     else {
-        noData.style.opacity = 0;
+        NO_DATA.style.opacity = 0;
     }
 
-    if (!addButton.classList.contains('focus')) addButton.classList.add('focus');
-    if (searchButton.classList.contains('focus')) searchButton.classList.remove('focus');
+    if (!ADD_BUTTON.classList.contains('focus')) ADD_BUTTON.classList.add('focus');
+    if (SEARCH_BUTTON.classList.contains('focus')) SEARCH_BUTTON.classList.remove('focus');
+
+    if (!ALL_DATA.classList.contains('active-footer'))
+        ALL_DATA.classList.add('active-footer');
+    if (ACTIVE_DATA.classList.contains('active-footer'))
+        ACTIVE_DATA.classList.remove('active-footer');
+    if (COMPLETE_DATA.classList.contains('active-footer'))
+        COMPLETE_DATA.classList.remove('active-footer');
 }
 
-const search = (data) => {
-    const filterdData = dataList.filter(mov => mov.data.toLowerCase().includes(data.toLowerCase()));
+// Search Function
+const searchItem = (dataItem) => {
+    DATA_MAIN_CONTAINER.innerHTML = '';
+    const data = dataItem.toLowerCase();
+    const filterdData = dataList.filter(dataItem => dataItem.data.toLowerCase().includes(data));
     if (filterdData.length != 0) {
-        displayData(filterdData);
-        mainBar.value = '';
+        viewTODO(filterdData);
+        NO_DATA.style.opacity = 0;
     }
     else if (filterdData.length == 0) {
-        noData.innerHTML = 'NO DATA FOUND';
-        noData.style.opacity = 100;
-        displayData(filterdData);
+        NO_DATA.innerHTML = 'NO DATA FOUND';
+        NO_DATA.style.opacity = 100;
     }
     else {
-        noData.style.opacity = 0;
+        NO_DATA.style.opacity = 0;
     }
-    mainBar.value = '';
 
-    if (!searchButton.classList.contains('focus')) searchButton.classList.add('focus');
-    if (addButton.classList.contains('focus')) addButton.classList.remove('focus');
+    if (!SEARCH_BUTTON.classList.contains('focus')) SEARCH_BUTTON.classList.add('focus');
+    if (ADD_BUTTON.classList.contains('focus')) ADD_BUTTON.classList.remove('focus');
 }
 
 
-mainBar.addEventListener('keypress', function (e) {
-    if (e.key == 'Enter' && addButton.classList.contains('focus')) {
-        e.preventDefault();
-        const data = mainBar.value;
-        add(data);
+// Value of main bar will ADD or SEARCH by enter key
+MAIN_BAR.addEventListener('keyup', function (e) {
+    if (e.key == 'Enter' && ADD_BUTTON.classList.contains('focus')) {
+        // e.preventDefault();
+        const data = MAIN_BAR.value;
+        addItem(data);
     }
-    else if (e.key == 'Enter' && searchButton.classList.contains('focus')) {
-        e.preventDefault();
-
-        dataMainContainer.innerHTML = '';
-        const data = mainBar.value;
-        search(data);
+    else if (SEARCH_BUTTON.classList.contains('focus')) {
+        // e.preventDefault();
+        DATA_MAIN_CONTAINER.innerHTML = '';
+        const data = MAIN_BAR.value;
+        searchItem(data);
     }
 });
 
-
-addButton.addEventListener('click', function (e) {
+// TODO Item add onclick of Add button
+ADD_BUTTON.addEventListener('click', function (e) {
     e.preventDefault();
 
     if (dataList.length !== 0) {
-        displayData(dataList);
+        viewTODO(dataList);
     }
-    const data = mainBar.value;
-    add(data);
+    const data = MAIN_BAR.value;
+    console.log(data);
+    addItem(data);
 });
 
-
-searchButton.addEventListener('click', function (e) {
+// TODO Item search onclick of Search button
+SEARCH_BUTTON.addEventListener('click', function (e) {
     e.preventDefault();
 
-    dataMainContainer.innerHTML = '';
-    const data = mainBar.value;
-    search(data);
+    DATA_MAIN_CONTAINER.innerHTML = '';
+    const data = MAIN_BAR.value;
+    searchItem(data);
 });
 
-mainBar.addEventListener('change', function (e) {
-    console.log('mainbar value changed');
-});
-
-allData.addEventListener('click', function (e) {
+// Display all item of TODO
+ALL_DATA.addEventListener('click', function (e) {
     e.preventDefault();
-    displayData(dataList);
-});
-
-activeData.addEventListener('click', function (e) {
-    e.preventDefault();
-    const active = dataList.filter(d => d.check == false);
-    if (active.length === 0) { 
-        noData.innerHTML = 'NO DATA FOUND';
-        noData.style.opacity = 100;
-        dataMainContainer.innerHTML = '';
+    if (!ALL_DATA.classList.contains('active-footer'))
+        ALL_DATA.classList.add('active-footer');
+    if (ACTIVE_DATA.classList.contains('active-footer'))
+        ACTIVE_DATA.classList.remove('active-footer');
+    if (COMPLETE_DATA.classList.contains('active-footer'))
+        COMPLETE_DATA.classList.remove('active-footer');
+    if (dataList.length === 0) {
+        NO_DATA.innerHTML = 'ADD NEW TASK ITEM';
+        NO_DATA.style.opacity = 100;
+        DATA_MAIN_CONTAINER.innerHTML = '';
     }
     else {
-        noData.style.opacity = 0;
-        displayData(active);
+        NO_DATA.style.opacity = 0;
+        viewTODO(dataList);
     }
 });
 
-completeData.addEventListener('click', function (e) {
+// Display active item of TODO
+ACTIVE_DATA.addEventListener('click', function (e) {
     e.preventDefault();
+    if (!ACTIVE_DATA.classList.contains('active-footer'))
+        ACTIVE_DATA.classList.add('active-footer');
+    if (ALL_DATA.classList.contains('active-footer'))
+        ALL_DATA.classList.remove('active-footer');
+    if (COMPLETE_DATA.classList.contains('active-footer'))
+        COMPLETE_DATA.classList.remove('active-footer');
+    const active = dataList.filter(d => d.check == false);
+    if (active.length === 0) {
+        NO_DATA.innerHTML = 'NO DATA FOUND';
+        NO_DATA.style.opacity = 100;
+        DATA_MAIN_CONTAINER.innerHTML = '';
+    }
+    else {
+        NO_DATA.style.opacity = 0;
+        viewTODO(active);
+    }
+});
+
+// Display completed item of TODO
+COMPLETE_DATA.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (!COMPLETE_DATA.classList.contains('active-footer'))
+        COMPLETE_DATA.classList.add('active-footer');
+    if (ALL_DATA.classList.contains('active-footer'))
+        ALL_DATA.classList.remove('active-footer');
+    if (ACTIVE_DATA.classList.contains('active-footer'))
+        ACTIVE_DATA.classList.remove('active-footer');
     const complete = dataList.filter(d => d.check == true);
     if (complete.length === 0) {
-        noData.innerHTML = 'NO DATA FOUND';
-        noData.style.opacity = 100;
-        dataMainContainer.innerHTML = '';
+        NO_DATA.innerHTML = 'NO DATA FOUND';
+        NO_DATA.style.opacity = 100;
+        DATA_MAIN_CONTAINER.innerHTML = '';
     }
     else {
-        noData.style.opacity = 0;
-        displayData(complete);
+        NO_DATA.style.opacity = 0;
+        viewTODO(complete);
     }
 });
 
 let sort = false;
 
-Sort.addEventListener('change', function () {
-    if (Sort.value == 'A-Z') {
-        displayData(dataList, !sort, Sort.value);
-        Sort.value = 'Sort-List';
+const sortItem = (value) => {
+    if (value == 'A-Z') {
+        viewTODO(dataList, !sort, value);
     }
-    else if (Sort.value == 'Z-A') {
-        displayData(dataList, !sort, Sort.value);
-        Sort.value = 'Sort-List';
+    else if (value == 'Z-A') {
+        viewTODO(dataList, !sort, value);
     }
-    else if (Sort.value == 'Newest') {
-        displayData(dataList, sort, Sort.value);
-        Sort.value = 'Sort-List';
+    else if (value == 'Newest') {
+        viewTODO(dataList, sort, value);
     }
-    else if (Sort.value == 'Oldest') {
-        displayData(dataList, sort, Sort.value);
-        Sort.value = 'Sort-List';
+    else if (value == 'Oldest') {
+        viewTODO(dataList, sort, value);
     }
+}
+// Sort item of TODO
+SORT.addEventListener('change', function () {
+    sortItem(SORT.value);
 });
 
+SORT.addEventListener('click', function () {
+    sortItem(SORT.value);
+});
+
+// Delete all selected item of TODO FUNCTION
 const deleteallSelected = () => {
     if (dataList.filter(d => d.check == true).length != 0) {
         if (confirm("Are you sure for deleting this task ?") == true) {
-            dataMainContainer.innerHTML = '';
+            DATA_MAIN_CONTAINER.innerHTML = '';
             const x = dataList.filter(d => d.check == false);
-            console.log('x', x);
             dataList.splice(0);
             console.log(dataList);
             dataList = [].concat(x);
             if (dataList.length === 0) {
-                noData.innerHTML = 'ADD NEW TASK ITEM';
-                noData.style.opacity = 100;
+                NO_DATA.innerHTML = 'ADD NEW TASK ITEM';
+                NO_DATA.style.opacity = 100;
             }
             else {
-                displayData(dataList);
+                viewTODO(dataList);
             }
         }
     }
-    else{
+    else {
         alert('First select the task ;)');
     }
 }
 
-const selectAllF = () => {
+// Select all item of TODO FUNCTION
+const selectAll = () => {
     dataList.forEach(d => d.check = true);
     if (dataList.length !== 0) {
-        displayData(dataList);
+        viewTODO(dataList);
     }
     else {
-        dataMainContainer.innerHTML = '';
+        DATA_MAIN_CONTAINER.innerHTML = '';
     }
 }
 
-const unselectAllF = () => {
-    dataList.forEach((mov) => mov.check = false);
+// UnSelect all item of TODO FUNCTION
+const unselectAll = () => {
+    dataList.forEach((dataItem) => dataItem.check = false);
     if (dataList.length !== 0) {
-        displayData(dataList);
+        viewTODO(dataList);
     }
     else {
-        dataMainContainer.innerHTML = '';
+        DATA_MAIN_CONTAINER.innerHTML = '';
     }
 }
 
-action.addEventListener('change', function () {
-    if (action.value == "Delete All Selected") {
+// perform action like deleteAllSelected, selectAll, unselectAll
+ACTION.addEventListener('change', function () {
+    if (ACTION.value == "Delete All Selected") {
         deleteallSelected();
-        action.value = "Action";
+        ACTION.value = "Action";
     }
-    else if (action.value == "Select All") {
-        selectAllF();
-        action.value = "Action";
+    else if (ACTION.value == "Select All") {
+        selectAll();
+        ACTION.value = "Action";
     }
-    else if (action.value == "Unselect All") {
-        unselectAllF();
-        action.value = "Action";
+    else if (ACTION.value == "Unselect All") {
+        unselectAll();
+        ACTION.value = "Action";
     }
 });
 
-
-
-
-
-function checkID(index) {
+// Checked Item function
+function checkItem(index) {
     const dataCheck = dataList.findIndex(d => d.id === index);
     dataList[dataCheck].check = !dataList[dataCheck].check;
     const checkInput = document.getElementById(`check-${index}`);
-    //checkInput.checked = true;
-    if (checkInput.checked)
+    // const textInput = document.getElementById(index);
+    if (checkInput.checked) {
         checkInput.setAttribute('checked', '');
-    else
-        checkInput.removeAttribute('checked');
-
-    displayData(dataList);
-}
-/*
-function validateInterest(evt)
-{
-    evt.preventDefault();
-    var mininterest = document.querySelectorAll("[name=mininterest]");
-    var count = 0,
-    interests = [];
-    for (var i = 0; i < mininterest.length; i++)
-    {
-        if (mininterest[i].checked) {
-            count++;
-            interests.push(mininterest[i].value);
-        }
-    } //This is meant to mimic where you would make a fetch POST call
-    if (count > 1) {
-        addToLog("enough interests selected: " + interests);
     }
     else {
-        addToLog("**NOT ENOUGH** interests selected: " + interests);
+        checkInput.removeAttribute('checked');
     }
-    return false;
+
+    viewTODO(dataList);
 }
 
-action.addEventListener("click", function() {
-    var options = action.querySelectorAll("option");
-    var count = options.length;
-    if(typeof(count) === "undefined" || count < 2)
-    {
-        addActivityItem();
+
+/*
+ if(checkInput.classList.contains('del'))
+            checkInput.classList.remove('del');
     }
-});
 */
-
-
- // editInput.value = Data;
-
-
-    // if (editButton.classList.contains('edit-active')) {
-    //     console.log('EDIT');
-    // }
-
-    // document.addEventListener('keypress', function (e) {
-    //     if (e.key === 'Enter' && editButton.classList.contains('edit-active')) {
-
-    //         e.preventDefault();
-            // d = editInput.value;
-            // dataList.splice(id, 1);
-            // dataList.push({ id: id, data: d, check: false });
-            // editButton.classList.remove('edit-active');
-    //     }
-    // });

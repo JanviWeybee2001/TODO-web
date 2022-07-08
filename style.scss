@@ -16,8 +16,18 @@
     border-color: var(--primary-color);
 }
 
+.del {
+    text-decoration: line-through;
+}
+
 body {
-    margin: 2% 20%;
+   margin: 0;
+   padding: 0;
+}
+
+.container{
+    width: 80%;
+    margin: auto;
 }
 
 header {
@@ -58,11 +68,16 @@ section {
     }
 
     .data-line {
+        width: 100%;
         display: flex;
         justify-content: space-between;
-        width: 100%;
+        box-sizing: border-box;
 
         .data {
+            display: flex;
+            width: 75%;
+            gap: 10px;
+
             input[type=text] {
                 border: none;
                 font-size: 25px;
@@ -70,6 +85,9 @@ section {
         }
 
         .data-button {
+            display: flex;
+            justify-content: flex-start;
+            // width: 40%;
             button {
                 border: none;
                 font-size: 25px;
@@ -94,8 +112,9 @@ footer {
 
     .footer-button {
         display: flex;
-        justify-content: space-between;
+        justify-content: space-around;
         padding: 0 5px;
+        border-right: 1px solid var(--primary-color);
 
         button {
             font-size: 25px;
@@ -117,7 +136,7 @@ footer {
         #sort {
             font-size: 20px;
             padding: 0 3px;
-            margin: 0 10px;
+            margin: 0 25px;
 
             &:focus {
                 box-shadow: 0 0 10px var(--primary-color);
@@ -132,7 +151,7 @@ footer {
         gap: -2px;
         font-size: 25px;
 
-        button {
+        #all, #active, #complete {
             color: white;
             background-color: var(--primary-color);
             border-color: var(--primary-color);
@@ -148,47 +167,7 @@ footer {
     display: none;
 }
 
-@media only screen and (max-width:480px) {
-    body {
-        margin: 2% 10%;
-    }
-
-    footer {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-top: 20px;
-
-        .footer-button {
-            width: 100%;
-
-            button {
-                justify-content: center;
-                font-size: 15px;
-                height: 30px;
-                width: 30px;
-            }
-        }
-
-        .footer-menu {
-            width: 100%;
-            font-size: 15px;
-        }
-
-        .footer-action {
-            width: 100%;
-            display: grid;
-            grid-template-columns: 0.6fr 1fr 1.4fr;
-            margin: 10px 10%;
-            gap: 5%;
-            height: 30px;
-            font-size: 15px;
-        }
-
-    }
-}
-
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1024px) {
     footer {
         display: flex;
         flex-wrap: wrap;
@@ -196,6 +175,7 @@ footer {
 
         .footer-button {
             width: 40%;
+            border-right: none;
         }
 
         .footer-menu {
@@ -221,3 +201,27 @@ footer {
 
     }
 }
+
+
+@media only screen and (max-width:420px) {
+
+    .data-line{
+        display: flex;
+        width: 100%;
+
+        // .data-button{
+        //     display: flex;
+        //     width: 80%;
+        //     margin-right: inherit;
+        // }
+    }
+    
+}
+
+
+
+
+.active-footer {
+    background-color: white !important;
+    color: var(--primary-color) !important;
+} 
